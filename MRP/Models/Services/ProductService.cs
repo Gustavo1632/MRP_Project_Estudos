@@ -30,12 +30,12 @@ namespace MRP.Models.Services
             return await _context.Product.OrderBy(x => x.Description).ToListAsync();
         }
 
-        public async Task<Product> FindByIdAsync(string id)
+        public Product FindById(string id)
         {
-            return await _context.Product.FirstOrDefaultAsync(x => x.Id == id);
+            return _context.Product.FirstOrDefault(x => x.Id == id);
         }
 
-        public async Task RemoveAsync(string  id)
+        public async Task RemoveAsync(string id)
         {
             var obj = await _context.Product.FindAsync(id);
             _context.Product.Remove(obj);
@@ -48,7 +48,7 @@ namespace MRP.Models.Services
             product.AvailableQuantity += quantity;
             product.Quantity = quantity;
             double amount = (double)quantity * product.Price;
-            product.MovimentsRecords.Add(new MovimentRecord(product.Description, product, 
+            product.MovimentsRecords.Add(new MovimentRecord(product.Description, product,
                 quantity, DateTime.Now, amount, EMoviment.Receiving));
         }
 
@@ -58,8 +58,28 @@ namespace MRP.Models.Services
             product.AvailableQuantity -= quantity;
             product.Quantity = quantity;
             double amount = (double)quantity * product.Price;
-            product.MovimentsRecords.Add(new MovimentRecord(product.Description, product, 
+            product.MovimentsRecords.Add(new MovimentRecord(product.Description, product,
                 product.Quantity, DateTime.Now, amount, EMoviment.Receiving));
+        }
+
+        public List<ProductType> ProductTypeList()
+        {
+            var productTypeList = new List<ProductType>();
+
+            var t1 = new ProductType("1", "Manufactured Component");
+            var t2 = new ProductType("2", "Imported");
+            var t3 = new ProductType("3", "National Purchased");
+            var t4 = new ProductType("4", "Benefited");
+            var t5 = new ProductType("5", "FinishGoods");
+
+            productTypeList.Add(t1);
+            productTypeList.Add(t2);
+            productTypeList.Add(t3);
+            productTypeList.Add(t4);
+            productTypeList.Add(t5);
+
+            return productTypeList;
+
         }
     }
 }

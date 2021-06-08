@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MRP.Models.Entities.Product>
+﻿@model IEnumerable<MRP.Models.ViewModel.ProductFormViewModel>
 
 @{
     ViewData["Title"] = "Products";
@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Description)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProductTypeDescription)
+                @Html.DisplayNameFor(model => model.ProductType)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.AvailableQuantity)
@@ -35,7 +35,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ProductTypeDescription)
+                    @Html.DisplayFor(modelItem => item.ProductType)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.AvailableQuantity)
@@ -44,10 +44,10 @@
                     @Html.DisplayFor(modelItem => item.Price)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
-                    <a asp-action="IncreaseStock" asp-route-id="@item.Id">IncreaseStock</a>
+                    <a asp-action="Edit" asp-route-id="@item.ProductId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProductId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProductId">Delete</a> |
+                    <a asp-action="IncreaseStock" asp-route-id="@item.ProductId">IncreaseStock</a>
 
                 </td>
             </tr>

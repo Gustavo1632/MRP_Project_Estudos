@@ -13,8 +13,7 @@ namespace MRP.Models.Entities
         [Required(ErrorMessage = "{0} required")]
         [StringLength(60, MinimumLength = 3)]
         public string Description { get; set; }
-        public int ProductTypeId { get; set; }
-        public string ProductTypeDescription { get; set; }
+        public EProductType ProductType { get; set; }
         public ICollection<ProductType> ProductTypes { get; set; } = new List<ProductType>();
         [Display(Name = "Available Quantity")]
         [Required(ErrorMessage = "{0} required")]
@@ -22,33 +21,33 @@ namespace MRP.Models.Entities
         [DataType(DataType.Currency)]
         public double Price { get; set; }
         [Display(Name = "Supplier")]
-        public int SupplierId { get; set; }
+        public string SupplierId { get; set; }
         public int Quantity { get; set; }
         public ICollection<Supplier> Suppliers { get; set; } = new List<Supplier>();
         public ICollection<MovimentRecord> MovimentsRecords { get; set; } = new List<MovimentRecord>();
 
 
-        public Product(string description, int productTypeId, int availableQuantity, double price, int supplierId, string productDescription)
+        public Product(string id,string description, EProductType productType, int availableQuantity, double price, string supplierId)
         {
-            Id = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 8).ToUpper();
+            Id = id;
             Description = description;
-            ProductTypeId = productTypeId;
+            ProductType = productType;
             AvailableQuantity = availableQuantity;
             Price = price;
             SupplierId = supplierId;
-            ProductTypeDescription = productDescription;
+
         }
 
         public Product()
         {
         }
 
-              
-        
         public override string ToString()
         {
             return Description;
         }
+
+
 
 
     }

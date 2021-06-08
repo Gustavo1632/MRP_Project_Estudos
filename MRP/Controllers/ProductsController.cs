@@ -31,8 +31,24 @@ namespace MRP.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Product.ToListAsync());
+            var prod = new List<ProductFormViewModel>();
+
+            var products = await _productService.FindAllAsync();
+
+            foreach (Product x in products)
+            {
+                prod.Add(new ProductFormViewModel
+                {
+                    ProductId = x.Id,
+                    Description = x.Description,
+                    ProductType = x.ProductType,
+                    AvailableQuantity = x.AvailableQuantity,
+                    Price = x.Price
+                });
+            }
+            return View(prod);
         }
+
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(string id)
@@ -42,14 +58,23 @@ namespace MRP.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _context.Product.FirstOrDefaultAsync(m => m.Id == id);
+
+            var viewModel = new ProductFormViewModel
+            {
+                ProductId = product.Id,
+                Description = product.Description,
+                ProductType = product.ProductType,
+                AvailableQuantity = product.AvailableQuantity,
+                Price = product.Price
+
+            };
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return View(viewModel);
         }
 
 
@@ -57,9 +82,9 @@ namespace MRP.Controllers
         // GET: Products/Create
         public async Task<IActionResult> CreateAsync()
         {
-            var productTypes = await _productTypeService.FindAllAsync();
+            //var productTypes = await _productTypeService.FindAllAsync();
             var suppliers = await _supplierService.FindAllAsync();
-            var viewModel = new ProductFormViewModel { Suppliers = suppliers, ProductTypes = productTypes };
+            var viewModel = new ProductFormViewModel { Suppliers = suppliers, ProductTypes = _productService.ProductTypeList() };
 
             return View(viewModel);
         }
@@ -71,18 +96,18 @@ namespace MRP.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductFormViewModel productVM)
         {
+            productVM.ProductId = _supplierService.GetId();
 
-            var productTypes = await _productTypeService.FindAllAsync();
+            var productTypes = _productService.ProductTypeList();
 
-            var product = new Product(productVM.Product.Description, productVM.Product.ProductTypeId,
-                productVM.Product.AvailableQuantity, productVM.Product.Price, productVM.Product.SupplierId,
-                productTypes.FirstOrDefault(x => x.Id == productVM.Product.ProductTypeId).Description);
+            var product = new Product(productVM.ProductId, productVM.Description, productVM.ProductType,
+                productVM.AvailableQuantity, productVM.Price, productVM.SupplierId);
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 //var productTypes = await _productTypeService.FindAllAsync();
                 var suppliers = await _supplierService.FindAllAsync();
-                var viewModel = new ProductFormViewModel { Product = product, Suppliers = suppliers, ProductTypes = productTypes };
+                var viewModel = new ProductFormViewModel { Suppliers = suppliers, ProductTypes = productTypes };
                 return View(viewModel);
             }
             //product.Id = new Guid();
@@ -93,9 +118,9 @@ namespace MRP.Controllers
         }
 
         // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(string id=null)
+        public async Task<IActionResult> Edit(string id)
         {
-            var productTypes = await _productTypeService.FindAllAsync();
+            var productTypes = _productService.ProductTypeList();
 
             if (id == null)
             {
@@ -104,13 +129,26 @@ namespace MRP.Controllers
 
             var product = await _context.Product.FindAsync(id);
             product.ProductTypes = productTypes;
-           
+
+            var viewModel = new ProductFormViewModel
+            {
+                ProductId=product.Id,
+                Description = product.Description,
+                ProductType = product.ProductType,
+                AvailableQuantity = product.AvailableQuantity,
+                Price = product.Price,
+                SupplierId=product.SupplierId,
+                Quantity=product.Quantity,
+                Suppliers=product.Suppliers,
+                ProductTypes=product.ProductTypes
+            };
+
 
             if (product == null)
             {
                 return NotFound();
             }
-            return View(product);
+            return View(viewModel);
         }
 
         // POST: Products/Edit/5
@@ -118,16 +156,21 @@ namespace MRP.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, Product product)
+        public async Task<IActionResult> Edit(string id, ProductFormViewModel productVM)
         {
-            if (id != product.Id)
+            if (id != productVM.ProductId)
             {
                 return NotFound();
             }
 
-            var productTypes = await _productTypeService.FindAllAsync();
-            product.ProductTypeDescription = productTypes.FirstOrDefault(x => x.Id == product.ProductTypeId).Description;
+            var productTypes = _productService.ProductTypeList();
+            //product.ProductType = productTypes.FirstOrDefault(x => x.Description == product.Description);
 
+            var product = _productService.FindById(productVM.ProductId);
+            product.Description = productVM.Description;
+            product.ProductType = productVM.ProductType;
+            product.Price = productVM.Price;
+         
             try
             {
                 _context.Update(product);
@@ -136,7 +179,7 @@ namespace MRP.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ProductExists(product.Id))
+                if (ProductExists(productVM.ProductId))
                 {
                     return NotFound();
                 }
@@ -145,13 +188,10 @@ namespace MRP.Controllers
                     throw;
                 }
             }
-
-
-
         }
 
         // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(string id=null)
+        public async Task<IActionResult> Delete(string id = null)
         {
             if (id == null)
             {

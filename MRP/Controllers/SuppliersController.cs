@@ -53,11 +53,12 @@ namespace MRP.Controllers
             if (id == null)
                 return NotFound();
 
-            var supplier = _context.Supplier.Include(x => x.Email).Include(x => x.CNPJ).
-               Include(x => x.Address).FirstOrDefault(x => x.Id == id);
+            var supplier = await _context.Supplier.Include(x => x.Email).Include(x => x.CNPJ).
+               Include(x => x.Address).FirstOrDefaultAsync(x => x.Id == id);
 
             var viewmodel = new SupplierViewModel
             {
+                SupplierId=supplier.Id,
                 Description = supplier.Description,
                 CNPJNumber = supplier.CNPJ.Number,
                 EmailAddress = supplier.Email.Address,
@@ -112,7 +113,7 @@ namespace MRP.Controllers
         }
 
         // GET: Suppliers/Edit/5
-        public async Task<IActionResult> Edit(string id = null)
+        public async Task<IActionResult> Edit(string id)
         {
             if (id == null)
                 return NotFound();

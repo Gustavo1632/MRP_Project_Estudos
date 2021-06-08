@@ -13,4 +13,6 @@ namespace MRP.Models.Enums
         Benefited = 4,
         FinishGoods = 5
     }
+
+
 }

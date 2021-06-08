@@ -7,10 +7,10 @@ namespace MRP.Models.Entities
 {
     public class ProductType
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Description { get; set; }
 
-        public ProductType(int id, string description)
+        public ProductType(string id, string description)
         {
             Id = id;
             Description = description;

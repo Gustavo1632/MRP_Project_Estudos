@@ -37,11 +37,10 @@ namespace MRP
             services.AddScoped<SupplierService>();
             services.AddScoped<MovimentRecordService>();
             services.AddScoped<ProductTypeService>();
-            services.AddScoped<SeedingService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, SeedingService seedingService)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var enUS = new CultureInfo("en-US");
             var localizationOptions = new RequestLocalizationOptions
@@ -56,7 +55,7 @@ namespace MRP
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                seedingService.Seed();
+                //seedingService.Seed();
             }
             else
             {
