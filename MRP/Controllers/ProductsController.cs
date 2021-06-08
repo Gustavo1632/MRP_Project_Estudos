@@ -18,14 +18,12 @@ namespace MRP.Controllers
         private readonly MRPContext _context;
         private readonly ProductService _productService;
         private readonly SupplierService _supplierService;
-        private readonly ProductTypeService _productTypeService;
 
-        public ProductsController(MRPContext context, ProductService productService, SupplierService supplierService, ProductTypeService productTypeService)
+        public ProductsController(MRPContext context, ProductService productService, SupplierService supplierService)
         {
             _context = context;
             _productService = productService;
             _supplierService = supplierService;
-            _productTypeService = productTypeService;
         }
 
         // GET: Products
@@ -132,15 +130,15 @@ namespace MRP.Controllers
 
             var viewModel = new ProductFormViewModel
             {
-                ProductId=product.Id,
+                ProductId = product.Id,
                 Description = product.Description,
                 ProductType = product.ProductType,
                 AvailableQuantity = product.AvailableQuantity,
                 Price = product.Price,
-                SupplierId=product.SupplierId,
-                Quantity=product.Quantity,
-                Suppliers=product.Suppliers,
-                ProductTypes=product.ProductTypes
+                SupplierId = product.SupplierId,
+                Quantity = product.Quantity,
+                Suppliers = product.Suppliers,
+                ProductTypes = product.ProductTypes
             };
 
 
@@ -170,7 +168,7 @@ namespace MRP.Controllers
             product.Description = productVM.Description;
             product.ProductType = productVM.ProductType;
             product.Price = productVM.Price;
-         
+
             try
             {
                 _context.Update(product);
